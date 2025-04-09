@@ -1,0 +1,71 @@
+<html>
+<head>
+    <title>{{ country.name }} - PM2.5 Exposure</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>{{ country.name }} ({{ country.code }})</h1>
+    <h2>Yearly PM2.5 Exposure (% of Population)</h2>
+
+    <canvas id="pm25Chart" width="600" height="300"></canvas>
+    <p id="dataDisplay" style="font-weight: bold;"></p>
+
+    <p><a href="{% url 'country_list' %}">← Back to Countries</a></p>
+
+    <script>
+        const years = {{ measurements|json_script:"years" }};
+        const values = {{ measurements|json_script:"values" }};
+
+        const labels = years;
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'PM2.5 Exposure (%)',
+                data: values,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                onClick: (e, elements) => {
+                    if (elements.length > 0) {
+                        const index = elements[0].index;
+                        const year = years[index];
+                        const value = values[index];
+                        const message = value === null ?
+                            `No data for this country in ${year}` :
+                            `${year}: ${value}% of the population exposed`;
+                        document.getElementById('dataDisplay').innerText = message;
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const val = context.raw;
+                                return val === null ? "No data" : `${val}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Exposure (%)' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Year' }
+                    }
+                }
+            }
+        };
+
+        new Chart(document.getElementById('pm25Chart'), config);
+    </script>
+</body>
+</html>

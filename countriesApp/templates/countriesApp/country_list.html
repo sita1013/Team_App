@@ -1,0 +1,15 @@
+<html>
+<head>
+    <title>Countries - PM2.5 Air Quality</title>
+</head>
+<body>
+    <h1>Countries - PM2.5 Air Pollution Exposure</h1>
+
+    {% for country in countries %}
+        <p>
+            <b><a href="{% url 'country_detail' country.code %}">{{ country.name }}</a></b>
+            ({{ country.code }})
+        </p>
+    {% endfor %}
+</body>
+</html>
