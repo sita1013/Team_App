@@ -16,3 +16,8 @@ def country_detail(request, country_code):
         'years': json.dumps(years, cls=DjangoJSONEncoder),
         'values': json.dumps(values, cls=DjangoJSONEncoder)
     })
+
+def country_list(request):
+    countries = Country.objects.all()
+    context = {'countries': countries}
+    return render(request, 'countries/list.html', context)
